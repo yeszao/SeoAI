@@ -20,7 +20,7 @@ def generate_seo_content(html, keywords) -> SeoResult:
         {"role": "assistant", "content": f"The SEO keywords we want to use are: \n{keywords}"},
         {"role": "user", "content": "Generate a revised version of the detailed html, correcting any syntax errors, fixing incoherent sentences, and friendly to SEO principles."},
         {"role": "user", "content": "And generate a short SEO-friendly description within 200 chars."},
-        {"role": "user", "content": "Remove font-family for html tags and remove style if it is empty."},
+        {"role": "user", "content": "Remove font-family for html tags and remove the html tag attributes are not necessary."},
         {"role": "user", "content": "The output should be in pure JSON dictionary with two keys: 'revised_html' and 'short_description'."},
     ]
 
