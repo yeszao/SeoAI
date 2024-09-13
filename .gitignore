@@ -2,3 +2,5 @@
 .DS_Store
 data
 venv/
+*.env
+__pycache__/
