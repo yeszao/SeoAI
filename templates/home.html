@@ -2,11 +2,23 @@
 <html>
 <head>
   <title>Runlala AI SEO Tool</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 
+  <style>
+      .CodeMirror {
+          border: 1px solid #ced4da;
+          border-radius: .375rem;
+          padding: .375rem .75rem;
+      }
+      .CodeMirror-line {
+          font-size: 14px!important;
+      }
+
+  </style>
 </head>
 <body class="bg-light">
 
@@ -38,29 +50,61 @@
       <h2>输出内容</h2>
       <div class="m-2">
         <label for="short-description"> 短描述</label>
-        <textarea readonly class="form-control" id="short-description" rows="3" placeholder="短描述，点击复制"></textarea>
+        <textarea readonly class="form-control" id="short-description" rows="3" placeholder="短描述，点击复制" onclick="copyToClipboard(this)"></textarea>
       </div>
 
       <div class="m-2">
         <label for="revised-html"> 新HTML内容</label>
-        <textarea readonly class="form-control" id="revised-html" rows="25" placeholder="新HTML内容，点击复制"></textarea>
+        <textarea readonly class="form-control" id="revised-html" rows="25" placeholder="新HTML内容，点击复制" onclick="copyToClipboard(this)"></textarea>
       </div>
     </div>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
 <script type="application/javascript">
+    const formEl = document.getElementById('seoForm');
+    const keywordsEl = document.getElementById('keywords');
+    const htmlEl = document.getElementById('html');
+    const submitEl = document.getElementById('submit-btn');
+    const shortDescriptionEl = document.getElementById('short-description');
+    const revisedHtmlEl = document.getElementById('revised-html');
+
+    function initCodeMirror(textareaEl, mode, height) {
+        var editor = CodeMirror.fromTextArea(textareaEl, {
+            mode: mode,
+            //lineNumbers: true,
+            theme: "default",
+            viewportMargin: Infinity,
+            lineWrapping: true,
+            matchBrackets: true,
+            autoCloseTags: true,
+        });
+        editor.setSize("100%", height);
+
+        editor.on("change", function (cm, change) {
+            textareaEl.value = cm.getValue();
+        });
+
+        return editor;
+    }
+
+    var htmlEditor = initCodeMirror(htmlEl, 'text/html', '550');
+    var revisedHtmlEditor = initCodeMirror(revisedHtmlEl, 'text/html', '550');
+
     // Form submission handling
-    document.getElementById('seoForm').addEventListener('submit', async function(event) {
+    formEl.addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        const keywords = document.getElementById('keywords').value;
-        const html = document.getElementById('html').value;
+        const keywords = keywordsEl.value;
+        const html = htmlEditor.getValue();
         const btn = document.getElementById('submit-btn');
 
-        btn.disabled = true;
-        oldText = btn.innerText;
-        btn.innerText = 'Generating...';
+        submitEl.disabled = true;
+        oldText = submitEl.innerText;
+        submitEl.innerText = 'Generating...';
 
         // Post the form data to the /generate API
         const response = await fetch('/generate', {
@@ -76,32 +120,23 @@
 
         if (!response.ok) {
             alert('Error generating content. Please try again.');
-            btn.disabled = false;
-            btn.innerText = oldText;
+            submitEl.disabled = false;
+            submitEl.innerText = oldText;
             return;
         }
 
         const data = await response.json();
         if (!data.success) {
             alert(data.error);
-            btn.disabled = false;
-            btn.innerText = oldText;
+            submitEl.disabled = false;
+            submitEl.innerText = oldText;
             return;
         }
 
-        document.getElementById('short-description').value = data.content.short_description || '';
-        document.getElementById('revised-html').value = data.content.revised_html || '';
+        shortDescriptionEl.value = data.content.short_description || '';
+        revisedHtmlEditor.setValue(data.content.revised_html || '');
         btn.disabled = false;
         btn.innerText = oldText;
-    });
-
-    // Copy content to clipboard when user clicks on a textarea
-    document.getElementById('short-description').addEventListener('click', function() {
-        copyToClipboard(this);
-    });
-
-    document.getElementById('revised-html').addEventListener('click', function() {
-        copyToClipboard(this);
     });
 
     // Function to copy text to clipboard
