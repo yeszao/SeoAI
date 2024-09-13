@@ -4,4 +4,4 @@ services:
     env_file:
       - local.env
     ports:
-      - "5005:5000"
+      - "5005:8000"

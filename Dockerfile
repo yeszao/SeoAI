@@ -13,4 +13,4 @@ COPY lib ${WORK_SPACE}/lib
 COPY templates ${WORK_SPACE}/templates
 COPY main.py ${WORK_SPACE}/main.py
 
-CMD ["python" , "main.py"]
+CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "-k", "gevent", "--worker-connections=100"]
