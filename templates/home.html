@@ -14,7 +14,7 @@
           border-radius: .375rem;
           padding: .375rem .75rem;
       }
-      .CodeMirror-line {
+      .CodeMirror-line, textarea {
           font-size: 14px!important;
       }
 
@@ -35,14 +35,14 @@
         </div>
 
         <div class="m-2">
-          <label for="html"> 原HTML内容</label>
-          <textarea class="form-control" id="html" rows="25" placeholder="原HTML内容"></textarea>
+          <label for="original-html"> 原HTML内容</label>
+          <textarea class="form-control" id="original-html" rows="25" placeholder="原HTML内容"></textarea>
 
         </div>
 
         <div class="m-2">
-          <button type="submit" id="submit-btn" class="btn btn-primary save-job-btn">提交</button>
-          <a href="https://text-compare.com/" target="_blank" class="btn btn-secondary">去对比</a>
+          <button type="submit" id="submit-btn" class="btn btn-primary save-job-btn">优化</button>
+          <button type="button" id="compare" class="btn btn-secondary">对比</button>
         </div>
       </form>
     </div>
@@ -51,12 +51,12 @@
       <h2>输出内容</h2>
       <div class="m-2">
         <label for="short-description"> 短描述</label>
-        <textarea readonly class="form-control" id="short-description" rows="3" placeholder="短描述，点击复制" onclick="copyToClipboard(this)"></textarea>
+        <textarea readonly class="form-control" id="short-description" rows="3" placeholder="短描述"></textarea>
       </div>
 
       <div class="m-2">
         <label for="revised-html"> 新HTML内容</label>
-        <textarea readonly class="form-control" id="revised-html" rows="25" placeholder="新HTML内容，点击复制" onclick="copyToClipboard(this)"></textarea>
+        <textarea readonly class="form-control" id="revised-html" rows="25" placeholder="新HTML内容"></textarea>
       </div>
     </div>
   </div>
@@ -68,10 +68,11 @@
 <script type="application/javascript">
     const formEl = document.getElementById('seoForm');
     const keywordsEl = document.getElementById('keywords');
-    const htmlEl = document.getElementById('html');
+    const originalHtmlEl = document.getElementById('original-html');
     const submitEl = document.getElementById('submit-btn');
     const shortDescriptionEl = document.getElementById('short-description');
     const revisedHtmlEl = document.getElementById('revised-html');
+    const compareBtn = document.getElementById('compare');
 
     function initCodeMirror(textareaEl, mode, height) {
         var editor = CodeMirror.fromTextArea(textareaEl, {
@@ -92,15 +93,28 @@
         return editor;
     }
 
-    var htmlEditor = initCodeMirror(htmlEl, 'text/html', '550');
-    var revisedHtmlEditor = initCodeMirror(revisedHtmlEl, 'text/html', '550');
+    var originalHtmlEditor = initCodeMirror(originalHtmlEl, 'text/html', '600');
+    var revisedHtmlEditor = initCodeMirror(revisedHtmlEl, 'text/html', '600');
+
+    originalHtmlEditor.on("change", function (cm, changeObj) {
+        localStorage.setItem('originalHtml', cm.getValue());
+    });
+
+    keywordsEl.addEventListener("change", function (event) {
+        console.log("keywords changed", event.currentTarget.value);
+        localStorage.setItem('keywords', event.currentTarget.value);
+    });
+
+    originalHtmlEditor.setValue(localStorage.getItem('originalHtml') || '');
+    keywordsEl.value = localStorage.getItem('keywords') || '';
+
 
     // Form submission handling
     formEl.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const keywords = keywordsEl.value;
-        const html = htmlEditor.getValue();
+        const html = originalHtmlEditor.getValue();
         const btn = document.getElementById('submit-btn');
 
         submitEl.disabled = true;
@@ -138,6 +152,13 @@
         revisedHtmlEditor.setValue(data.content.revised_html || '');
         btn.disabled = false;
         btn.innerText = oldText;
+        alert('Generated successfully');
+    });
+
+    compareBtn.addEventListener('click', function () {
+        localStorage.setItem('originalHtml', originalHtmlEditor.getValue());
+        localStorage.setItem('revisedHtml', revisedHtmlEditor.getValue());
+        window.open('/compare', '_blank');
     });
 
     // Function to copy text to clipboard

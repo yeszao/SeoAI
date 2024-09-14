@@ -16,12 +16,12 @@ def generate_seo_content(html, keywords) -> SeoResult:
 
     messages=[
         {"role": "system", "content": "You are a Google SEO expert."},
-        {"role": "assistant", "content": f"The current product detail html is: \n{html}"},
-        {"role": "assistant", "content": f"The SEO keywords we want to use are: \n{keywords}"},
-        {"role": "user", "content": "Generate a revised version of the detailed html, correcting any syntax errors, fixing incoherent sentences, and friendly to SEO principles."},
-        {"role": "user", "content": "And generate a short SEO-friendly description within 200 chars."},
-        {"role": "user", "content": "Remove font-family for html tags and remove the html tag attributes are not necessary."},
-        {"role": "user", "content": "The output should be in pure JSON dictionary with two keys: 'revised_html' and 'short_description'."},
+        {"role": "assistant", "content": f"The current product detailed html is: \n{html}"},
+        {"role": "assistant", "content": f"The SEO keywords are: \n{keywords}"},
+        {"role": "user", "content": "Generate a revised version of the detailed html and a short description."},
+        {"role": "user", "content": "The revised html should correct any syntax errors, fix incoherent sentences, and be friendly to SEO principles."},
+        {"role": "user", "content": "The short description should be concise, informative, SEO-friendly and less than 160 characters."},
+        {"role": "user", "content": "Remove any HTML tag attributes that are not necessary for SEO from revised HTML."},
     ]
 
     completion = client.beta.chat.completions.parse(
