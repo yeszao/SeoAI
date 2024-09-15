@@ -15,13 +15,11 @@ class SeoResult(BaseModel):
 def generate_seo_content(html, keywords) -> SeoResult:
 
     messages=[
-        {"role": "system", "content": "You are a Google SEO expert."},
-        {"role": "assistant", "content": f"The current product detailed html is: \n{html}"},
-        {"role": "assistant", "content": f"The SEO keywords are: \n{keywords}"},
-        {"role": "user", "content": "Generate a revised version of the detailed html and a short description."},
-        {"role": "user", "content": "The revised html should correct any syntax errors, fix incoherent sentences, and be friendly to SEO principles."},
-        {"role": "user", "content": "The short description should be concise, informative, SEO-friendly and less than 160 characters."},
-        {"role": "user", "content": "Remove any HTML tag attributes that are not necessary for SEO from revised HTML."},
+        {"role": "system", "content": "You are a Google SEO expert specializing in optimizing content without generating new HTML structures."},
+        {"role": "assistant", "content": f"Here is the current HTML content that needs revision, not a full rewrite: \n\n{html}"},
+        {"role": "assistant", "content": f"The relevant SEO keywords are: \n\n{keywords}"},
+        {"role": "user", "content": "Please revise the existing HTML content without changing the structure. Focus on fixing syntax errors, improving readability, and incorporating SEO best practices where relevant."},
+        {"role": "user", "content": "Also, generate a concise, SEO-friendly short description of the page that is less than 160 characters."}
     ]
 
     completion = client.beta.chat.completions.parse(
