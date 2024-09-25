@@ -13,15 +13,6 @@ class SeoResult(BaseModel):
 
 
 def generate_seo_content(html, keywords) -> SeoResult:
-
-    messages=[
-        {"role": "system", "content": "You are an expert Google SEO specialist with extensive knowledge of current best practices and algorithms."},
-        {"role": "user", "content": f"Review the following HTML content:\n\n```html\n{html}\n```"},
-        {"role": "user", "content": f"SEO-relevant keywords:\n{keywords}"},
-        {"role": "user", "content": "Revise the HTML content while preserving paragraph order and structure. Focus on correcting syntax, enhancing readability, optimizing for SEO, and prioritizing the use of both primary and long-tail keywords."},
-        {"role": "user", "content": "Additionally, generate a concise, SEO-optimized meta description for the page, under 160 characters."}
-    ]
-
     messages = [
         {"role": "system", "content": "You are an expert Google SEO specialist with extensive knowledge of current best practices and algorithms. Your task is to optimize HTML content for search engines while maintaining readability and user experience."},
         {"role": "user", "content": f"Review the following HTML content:\n\n```html\n{html}\n```"},
@@ -34,6 +25,7 @@ def generate_seo_content(html, keywords) -> SeoResult:
     5. Add alt text to images, if any, using relevant keywords
     6. Insert relevant keywords to the content where appropriate and bold them for emphasis
     7. Don't wrap the content in <html> or <body> tags
+    8. Reorganize the sentences to avoid repeated detection by search engines
     """},
         {"role": "user", "content": "Generate a concise, compelling meta description for the page, under 160 characters. Include the most important primary keyword and accurately summarize the page content."},
     ]
