@@ -3,5 +3,6 @@ services:
     build: .
     env_file:
       - local.env
+    restart: unless-stopped
     ports:
       - "5005:8000"
